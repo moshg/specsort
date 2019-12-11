@@ -40,18 +40,20 @@ impl SpecSort for bool {
         <bool as SpecSort>::sort_unstable_by(s, compare);
     }
 
+    #[inline]
     fn sort_by_me<T, F>(s: &mut [T], f: F)
     where
         F: FnMut(&T) -> Self,
     {
-        unimplemented!()
+        bucket_sort_by_bool(s, f);
     }
 
+    #[inline]
     fn sort_by_cached_me<T, F>(s: &mut [T], f: F)
     where
         F: FnMut(&T) -> Self,
     {
-        unimplemented!()
+        bucket_sort_by_bool(s, f);
     }
 
     #[inline]
