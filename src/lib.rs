@@ -71,7 +71,7 @@ impl SpecSort for bool {
     }
 
     #[inline]
-    fn sort_unstable_by_me<T, F>(s: &mut [T], mut f: F)
+    fn sort_unstable_by_me<T, F>(s: &mut [T], f: F)
     where
         F: FnMut(&T) -> Self,
     {
@@ -135,6 +135,72 @@ where
 
         alloc::dealloc(false_ptr as *mut u8, layout);
         alloc::dealloc(true_ptr as *mut u8, layout);
+    }
+}
+
+impl SpecSort for u8 {
+    #[inline]
+    fn sort(s: &mut [Self]) {
+        <u8 as SpecSort>::sort_unstable(s);
+    }
+
+    fn sort_by<F>(s: &mut [Self], compare: F)
+    where
+        F: FnMut(&Self, &Self) -> Ordering,
+    {
+        unimplemented!()
+    }
+
+    fn sort_by_me<T, F>(s: &mut [T], f: F)
+    where
+        F: FnMut(&T) -> Self,
+    {
+        unimplemented!()
+    }
+
+    fn sort_by_cached_me<T, F>(s: &mut [T], f: F)
+    where
+        F: FnMut(&T) -> Self,
+    {
+        unimplemented!()
+    }
+
+    #[inline]
+    fn sort_unstable(s: &mut [Self]) {
+        bucket_sort_u8(s);
+    }
+
+    fn sort_unstable_by<F>(s: &mut [Self], compare: F)
+    where
+        F: FnMut(&Self, &Self) -> Ordering,
+    {
+        unimplemented!()
+    }
+
+    fn sort_unstable_by_me<T, F>(s: &mut [T], f: F)
+    where
+        F: FnMut(&T) -> Self,
+    {
+        unimplemented!()
+    }
+}
+
+fn bucket_sort_u8(s: &mut [u8]) {
+    unsafe {
+        let mut counts = [0; 1 << 8];
+        for &x in s.iter() {
+            *counts.get_unchecked_mut(x as usize) += 1;
+        }
+
+        let mut p = s.as_mut_ptr();
+        for (n, &count) in (0..).zip(counts.iter()) {
+            let end = p.add(count);
+            while p < end {
+                *p = n;
+                p = p.offset(1);
+            }
+            p = end;
+        }
     }
 }
 
