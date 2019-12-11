@@ -11,7 +11,7 @@ fn sort_bool(s: &mut [bool]) {
     if cfg!(feature = "bench_std") {
         s.sort_unstable()
     } else if cfg!(feature = "bench_by_key") {
-        <bool as SpecSort>::sort_unstable_by_me(s, |b| *b)
+        <bool as SpecSort>::sort_by_me(s, |b| *b)
     } else {
         <bool as SpecSort>::sort_unstable(s);
     }
