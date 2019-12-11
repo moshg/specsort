@@ -9,3 +9,4 @@ rand = { version = "0.7" }
 
 [features]
 bench_std = []
+bench_by_key = []
