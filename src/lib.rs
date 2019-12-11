@@ -21,9 +21,6 @@ pub trait SpecSort: Ord + Sized {
     fn sort_unstable_by_me<T, F>(s: &mut [T], f: F)
     where
         F: FnMut(&T) -> Self;
-    fn sort_unstable_by_cached_me<T, F>(s: &mut [T], f: F)
-    where
-        F: FnMut(&T) -> Self;
 }
 
 impl SpecSort for bool {
@@ -110,13 +107,6 @@ impl SpecSort for bool {
             alloc::dealloc(false_ptr as *mut u8, layout);
             alloc::dealloc(true_ptr as *mut u8, layout);
         }
-    }
-
-    fn sort_unstable_by_cached_me<T, F>(s: &mut [T], f: F)
-    where
-        F: FnMut(&T) -> Self,
-    {
-        unimplemented!()
     }
 }
 
