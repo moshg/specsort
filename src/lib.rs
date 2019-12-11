@@ -54,8 +54,11 @@ impl SpecSort for bool {
 
     #[inline]
     fn sort_unstable(s: &mut [Self]) {
+        if cfg!(feature="v2") {
+            sort_bool2(s)
+        } else {
         sort_bool(s, false);
-    }
+    }}
 
     #[inline]
     fn sort_unstable_by<F>(s: &mut [Self], mut compare: F)
@@ -77,7 +80,7 @@ impl SpecSort for bool {
             return;
         }
 
-        let mut start = 0;
+        let mut i = 0;
         let mut end = s.len() - 1;
         let mut i = 0;
         while i <= end {
@@ -110,5 +113,43 @@ fn sort_bool(s: &mut [bool], reverse: bool) {
     }
     for b in tail {
         *b = !head_value;
+    }
+}
+
+pub fn sort_bool2(s: &mut [bool]) {
+    if s.is_empty() {
+        return;
+    }
+
+    unsafe {
+        let mut start = s.as_mut_ptr();
+        let mut end = start.offset(s.len() as isize - 1);
+        'outer: loop {
+            loop {
+                start = start.offset(1);
+                if start >= end {
+                    break 'outer;
+                }
+                if *start {
+                    break;
+                }
+            }
+
+            // Now `s[start]` is true
+            loop {
+                if !*end {
+                    break;
+                }
+                end = end.offset(-1);
+                if start >= end {
+                    break 'outer;
+                }
+            }
+
+            *start = false;
+            *end = true;
+            start = start.offset(1);
+            end = end.offset(-1);
+        }
     }
 }
