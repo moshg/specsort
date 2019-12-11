@@ -6,3 +6,6 @@ edition = "2018"
 
 [dev-dependencies]
 rand = { version = "0.7" }
+
+[features]
+bench_std = []
