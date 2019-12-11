@@ -1,0 +1,8 @@
+[package]
+name = "specsort"
+version = "0.1.0"
+authors = ["mosh <mosh21168@gmail.com>"]
+edition = "2018"
+
+[dev-dependencies]
+rand = { version = "0.7" }
