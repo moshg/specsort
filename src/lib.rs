@@ -70,43 +70,12 @@ impl SpecSort for bool {
         }
     }
 
+    #[inline]
     fn sort_unstable_by_me<T, F>(s: &mut [T], mut f: F)
     where
         F: FnMut(&T) -> Self,
     {
-        use std::alloc;
-        use std::mem;
-        use std::ptr;
-
-        unsafe {
-            if mem::size_of::<T>() == 0 || s.is_empty() {
-                return;
-            }
-
-            let layout =
-                alloc::Layout::from_size_align(mem::size_of::<T>() * s.len(), mem::align_of::<T>())
-                    .unwrap();
-            let true_ptr = alloc::alloc(layout) as *mut T;
-            let mut true_len = 0;
-            let false_ptr = alloc::alloc(layout) as *mut T;
-            let mut false_len = 0;
-
-            for x in s.iter_mut() {
-                if f(x) {
-                    ptr::copy_nonoverlapping(x, true_ptr.add(true_len), 1);
-                    true_len += 1;
-                } else {
-                    ptr::copy_nonoverlapping(x, false_ptr.add(false_len), 1);
-                    false_len += 1;
-                }
-            }
-
-            ptr::copy_nonoverlapping(false_ptr, s.as_mut_ptr(), false_len);
-            ptr::copy_nonoverlapping(true_ptr, s.as_mut_ptr().add(false_len), true_len);
-
-            alloc::dealloc(false_ptr as *mut u8, layout);
-            alloc::dealloc(true_ptr as *mut u8, layout);
-        }
+        s.sort_unstable_by_key(f)
     }
 }
 
