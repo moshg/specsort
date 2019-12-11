@@ -112,3 +112,39 @@ pub fn sort_bool(s: &mut [bool], reverse: bool) {
         *b = !head_value;
     }
 }
+
+pub fn sort_bool2(s: &mut [bool]) {
+    if s.is_empty() {
+        return;;
+    }
+
+    let mut start = 0;
+    let mut end = s.len() - 1;
+    'outer: loop {
+        loop {
+            start += 1;
+            if start >= end {
+                break 'outer;
+            }
+            if s[start] {
+                break;
+            }
+        }
+
+        // Now `s[start]` is true
+        loop {
+            if !s[end] {
+                break;
+            }
+            end -= 1;
+            if start >= end {
+                break 'outer;
+            }
+        }
+
+        s[start] = false;
+        s[end] = true;
+        start += 1;
+        end -= 1;
+    }
+}
