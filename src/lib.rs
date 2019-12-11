@@ -93,7 +93,7 @@ impl SpecSort for bool {
     }
 }
 
-pub fn sort_bool(s: &mut [bool], reverse: bool) {
+fn sort_bool(s: &mut [bool], reverse: bool) {
     let mut true_count = 0;
     for b in s.iter_mut() {
         true_count += *b as usize;
