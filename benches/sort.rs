@@ -3,17 +3,28 @@
 extern crate test;
 
 use rand;
-use rand::{thread_rng, Rng};
 use specsort::SpecSort;
 use test::Bencher;
 
-fn sort_bool(s: &mut [bool]) {
+#[cfg(feature = "bench_bool")]
+fn sort(s: &mut [bool]) {
     if cfg!(feature = "bench_std") {
         s.sort_unstable()
     } else if cfg!(feature = "bench_by_key") {
         <bool as SpecSort>::sort_by_me(s, |b| *b)
     } else {
         <bool as SpecSort>::sort_unstable(s);
+    }
+}
+
+#[cfg(feature = "bench_u8")]
+fn sort(s: &mut [u8]) {
+    if cfg!(feature = "bench_std") {
+        s.sort_unstable()
+    } else if cfg!(feature = "bench_by_key") {
+        <u8 as SpecSort>::sort_by_me(s, |n| *n)
+    } else {
+        <u8 as SpecSort>::sort_unstable(s);
     }
 }
 
@@ -25,25 +36,21 @@ fn bench_random(b: &mut Bencher, size: usize) {
 
     b.iter(|| {
         let mut v = v.clone();
-        sort_bool(&mut v);
+        sort(&mut v);
         v
     })
 }
 
 fn bench_sorted(b: &mut Bencher, size: usize) {
-    let mut v: Vec<bool> = Vec::with_capacity(size);
-    let mid = thread_rng().gen_range(0, size);
     let mut v = Vec::with_capacity(size);
-    for _ in 0..mid {
-        v.push(false);
+    for _ in 0..size {
+        v.push(rand::random());
     }
-    for _ in mid..size {
-        v.push(true);
-    }
+    v.sort();
 
     b.iter(|| {
         let mut v = v.clone();
-        sort_bool(&mut v);
+        sort(&mut v);
         v
     })
 }
