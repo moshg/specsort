@@ -1,3 +1,5 @@
+#![feature(is_sorted)]
+
 use std::cmp::Ordering;
 
 pub trait SpecSort: Ord + Sized {
@@ -133,5 +135,30 @@ fn sort_bool(s: &mut [bool], reverse: bool) {
     }
     for b in tail {
         *b = !head_value;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::SpecSort;
+    use rand::random;
+
+    fn random_vec(len: usize) -> Vec<bool> {
+        let mut v = Vec::with_capacity(len);
+        for _ in 0..len {
+            v.push(rand::random());
+        }
+        v
+    }
+
+    #[test]
+    fn test_bool() {
+        let mut v = random_vec(10000);
+        bool::sort_unstable(&mut v);
+        assert!(v.is_sorted());
+
+        let mut v = random_vec(10000);
+        bool::sort_unstable_by_me(&mut v, |b| *b);
+        assert!(v.is_sorted());
     }
 }
